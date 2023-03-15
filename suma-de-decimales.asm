@@ -1,8 +1,14 @@
+; En este ejericio dado un X entero buscamos la suma
+; de los 15 primeros decimales de 1/15
+; Ejemplo
+; 1/19 = 0.052631578947368
+; suma = 74 en BX = 4A 
+
 MOV AX, 1
 MOV CX, 19    
 MOV NUM1, CX ;ALMACENAMOS EL NUESTRO DIVISOR
 
-MOV CX, 15
+MOV CX, 4
 INC CX
 ciclo:
     CMP AX, NUM1 ; COMPROBAMOS QUE SE PUEDA DIVIDIR
@@ -30,6 +36,24 @@ ESMENOR:
     JMP ciclo ;salto a ciclo
 FIN:
     MOV BX, CONT
+    
+    MOV DL, 2
+    ADD DL, 48
+    MOV AH, 2
+    INT 21H
+    
+    MOV DL, 4
+    ADD DL, 48
+    MOV AH, 2
+    INT 21H
+    
+    MOV DL, 32
+    MOV AH, 2
+    INT 21H
+    
+    MOV DL, 65
+    MOV AH, 2
+    INT 21H
 ret
 
 ;VARIABLES 
