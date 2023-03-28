@@ -15,8 +15,8 @@ code segment
 start:
 ; set segment registers:
     mov ax, data
-    mov ds, ax     
-    mov es, ax     
+    mov ds, ax
+    mov es, ax
 
     ; add your code here
             
