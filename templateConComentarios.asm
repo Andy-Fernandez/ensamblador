@@ -14,8 +14,15 @@ ends
 code segment
 start:
 ; set segment registers:
+    ; Carga la direccion del segmento de datos en el registro AX
     mov ax, data
+
+    ; Inicializa el registro DS con la direccion del segmento de datos en el registro AX
+    ; DS significa "Data Segment" (Segmento de Datos)
     mov ds, ax     
+
+    ; Inicializa el registro ES con la direccion del segmento de datos en el registro AX
+    ; ES significa "Extra Segment" (Segmento Extra)
     mov es, ax     
 
     ; add your code here
