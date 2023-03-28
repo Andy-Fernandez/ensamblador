@@ -1,3 +1,4 @@
+; FUNCIONA 
 ; En este ejericio dado un X entero buscamos la suma
 ; de los 15 primeros decimales de 1/15
 ; Ejemplo

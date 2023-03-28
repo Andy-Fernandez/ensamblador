@@ -1,3 +1,4 @@
+; FUNCIONA
 ; En este ejercicio buscamos averiguar si la suma de todos los divisores de A
 ; es igual a B y resciprocamente, de esta forma podemos decir que son números amigos
 

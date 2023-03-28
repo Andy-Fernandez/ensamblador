@@ -36,7 +36,7 @@ start:
     aumentar:
         inc bx
         push cx
-        ;tenemos ERROR, llega un un loop infinito
+        ;### tenemos ERROR, llega un un loop infinito ### 
         jmp continuar
     
     ;sumamos los numeros
