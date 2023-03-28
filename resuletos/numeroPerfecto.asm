@@ -47,8 +47,8 @@ start:
         mov dx, 0
         mov ax, num1
         div cx
-        cmp dx, 0
-        jz aumentar
+        cmp dx, 0 ; comparamos si es igual a 0
+        jz aumentar ; en caso de ser igual a 0, lo agragamos a la cola de divisores 
         continuar:
         
         ; para evitar cilcos infitos comparamos CX==0
