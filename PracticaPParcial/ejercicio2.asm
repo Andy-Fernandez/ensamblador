@@ -8,7 +8,6 @@ data segment
     age db "Edad: 22$"
     semester db "Semestre: 5to$" 
 ends
-
 code segment
 start:
 ; set segment registers:
