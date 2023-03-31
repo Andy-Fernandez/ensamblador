@@ -3,6 +3,7 @@
 ;   12 110 no es 
 ;   15 1111 si es
 ;   90 1011010 no es
+;   1179 10010011011
 
 ; multi-segment executable file template.
 
