@@ -2,7 +2,7 @@
 
 data segment
     ; add your data here!
-    pkey db "press any key...$"
+    mensaje1 db "Factorial: $"
 ends
 
 stack segment
@@ -21,7 +21,38 @@ start:
     mov bx, 5
     mov ax, bx ; en ax se almacenara el producto
     
-    factoria:
+    factorial:
+        dec bx
+        mul bx
+        
+        cmp bx, 1
+        je mostrar
+        jne factorial 
+     
+     mostrar:
+        push ax
+        lea dx, mensaje1
+        mov ah, 9
+        int 21h        ; output string at ds:dx 
+        pop ax
+        
+        mov bx, 10     
+        mov cx, 0      
+            xor dx, dx        
+            div bx            
+            push dx           
+            inc cx            
+            test ax, ax       
+            jnz digito        
+        
+        imprimir:
+            pop dx            
+            add dl, '0'       
+            mov ah, 2         
+            int 21h           
+            loop imprimir     
+        
+        
            
 ends
 
