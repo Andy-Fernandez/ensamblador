@@ -1,0 +1,127 @@
+; multi-segment executable file template.
+
+data segment
+    ; si nuestra variable es dw el valor puede almacentarse en ax
+    ; si es db puede en ah o al, es ideal porque solo es un
+    ; digito
+    ; add your data here!
+    num1 dw ?
+    num2 dw ?
+    sumaC db "La suma es: $" 
+    restaC db "La resta es: $"
+    signoNegativo db "-$"
+ends
+
+stack segment
+    dw   128  dup(0)
+ends
+
+code segment
+start:
+; set segment registers:
+    mov ax, data
+    mov ds, ax
+    mov es, ax
+ 
+    ; leer el primer digito
+    mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
+    int 21h
+    sub al, '0' ; convertir el carácter a número
+    mov ah, 0
+    mov num1, ax ; guardar el número en la variable num1
+    
+    ; salto de linea 
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
+    int 21h  
+    
+    ; leer el segundo digito
+    mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
+    int 21h
+    sub al, '0' ; convertir el carácter a número
+    mov ah, 0
+    mov num2, ax ; guardar el número en la variable num2
+    
+    ; salto de linea
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
+    int 21h
+    
+    lea dx, sumaC
+    mov ah, 9
+    int 21h  
+    
+    ; SUMA
+    mov ax, num1
+    add ax, num2
+    
+    mov bx, 10
+    mov cx, 0
+
+    digito:
+        xor dx, dx
+        div bx
+        push dx
+        inc cx
+        test ax, ax
+        jnz digito
+    
+    imprimir:
+        pop dx
+        add dl, '0'
+        mov ah, 2
+        int 21h
+        loop imprimir
+    
+    ; salto de linea
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
+    int 21h
+    
+    lea dx, restaC
+    mov ah, 9
+    int 21h
+    
+    ; RESTA
+    mov ax, num1
+    sub ax, num2
+ 
+    mov bx, 10
+    mov cx, 0
+    
+    
+    ; determinar si el número es negativo
+    test ax, 8000h ; verifica el bit de signo
+    jz digitoN ; si no está activo, el número es positivo
+    neg ax ; si está activo, convierte el número en su complemento a 2
+    
+    push ax
+    lea dx, signoNegativo
+    mov ah, 9
+    int 21h
+    pop ax
+    
+    digitoN:
+        xor dx, dx
+        div bx
+        push dx
+        inc cx
+        test ax, ax
+        jnz digitoN
+    
+    imprimirN:
+        pop dx
+        add dl, '0'
+        mov ah, 2
+        int 21h
+        loop imprimirN
+        
+ends
+
+end start ; set entry point and stop the assembler.
