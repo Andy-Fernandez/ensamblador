@@ -2,7 +2,8 @@
 
 data segment
     ; add your data here!
-    mensaje1 db "Factorial: $"
+    num1 db ?
+    num2 db ?
 ends
 
 stack segment
@@ -15,45 +16,30 @@ start:
     mov ax, data
     mov ds, ax
     mov es, ax
+ 
+    ; leer el primer dígito
+    mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
+    int 21h
+    sub al, '0' ; convertir el carácter a número
+    mov num1, al ; guardar el número en la variable num1
 
-    ; add your code here
-    
-    mov bx, 5
-    mov ax, bx ; en ax se almacenara el producto
-    
-    factorial:
-        dec bx
-        mul bx
-        
-        cmp bx, 1
-        je mostrar
-        jne factorial 
-     
-     mostrar:
-        push ax
-        lea dx, mensaje1
-        mov ah, 9
-        int 21h        ; output string at ds:dx 
-        pop ax
-        
-        mov bx, 10     
-        mov cx, 0      
-            xor dx, dx        
-            div bx            
-            push dx           
-            inc cx            
-            test ax, ax       
-            jnz digito        
-        
-        imprimir:
-            pop dx            
-            add dl, '0'       
-            mov ah, 2         
-            int 21h           
-            loop imprimir     
-        
-        
-           
+    ; leer el segundo dígito
+    mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
+    int 21h
+    sub al, '0' ; convertir el carácter a número
+    mov num2, al ; guardar el número en la variable num2
+
+    ; imprimir los números leídos para verificar
+    mov ah, 2 ; función 2 de la interrupción 21h para imprimir un carácter
+    add num1, '0' ; convertir el número a carácter
+    mov dl, num1 ; cargar el carácter en dl
+    int 21h
+    add num2, '0' ; convertir el número a carácter
+    mov dl, num2 ; cargar el carácter en dl
+    int 21h
+
+    mov ah, 4ch ; función 4Ch de la interrupción 21h para salir del programa
+    int 21h    
 ends
 
 end start ; set entry point and stop the assembler.
