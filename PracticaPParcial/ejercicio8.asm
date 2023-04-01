@@ -1,9 +1,12 @@
+;8. Realizar un programa que lea 2 dígitos e imprima la suma y resta de los mismos
 ; multi-segment executable file template.
 
 data segment
     ; add your data here!
     num1 db ?
     num2 db ?
+    sumaC db "La suma es: $" 
+    restaC db "La resta es: $"
 ends
 
 stack segment
@@ -17,29 +20,97 @@ start:
     mov ds, ax
     mov es, ax
  
-    ; leer el primer dígito
+    ; leer el primer digito
     mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
     int 21h
     sub al, '0' ; convertir el carácter a número
     mov num1, al ; guardar el número en la variable num1
-
-    ; leer el segundo dígito
+    
+    ; salto de linea 
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
+    int 21h  
+    
+    ; leer el segundo digito
     mov ah, 1 ; función 1 de la interrupción 21h para leer un carácter
     int 21h
     sub al, '0' ; convertir el carácter a número
     mov num2, al ; guardar el número en la variable num2
-
-    ; imprimir los números leídos para verificar
-    mov ah, 2 ; función 2 de la interrupción 21h para imprimir un carácter
-    add num1, '0' ; convertir el número a carácter
-    mov dl, num1 ; cargar el carácter en dl
+    
+    ; salto de linea
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
     int 21h
-    add num2, '0' ; convertir el número a carácter
-    mov dl, num2 ; cargar el carácter en dl
-    int 21h
+    
+    lea dx, sumaC
+    mov ah, 9
+    int 21h  
+    
+    ; SUMA
+    mov ah, num1
+    add ah, num2
+    
+    mov al, ah
+    mov ah, 0
+    
+    mov bx, 10
+    mov cx, 0
 
-    mov ah, 4ch ; función 4Ch de la interrupción 21h para salir del programa
-    int 21h    
+    digito:
+        xor dx, dx
+        div bx
+        push dx
+        inc cx
+        test ax, ax
+        jnz digito
+    
+    imprimir:
+        pop dx
+        add dl, '0'
+        mov ah, 2
+        int 21h
+        loop imprimir
+    
+    ; salto de linea
+    mov ah, 2     
+    mov dl, 13    
+    int 21h       
+    mov dl, 10    
+    int 21h
+    
+    lea dx, restaC
+    mov ah, 9
+    int 21h
+    
+    ; RESTA
+    mov ah, num1
+    sub ah, num2
+    
+    mov al, ah
+    mov ah, 0
+    
+    mov bx, 10
+    mov cx, 0
+
+    digitoR:
+        xor dx, dx
+        div bx
+        push dx
+        inc cx
+        test ax, ax
+        jnz digitoR
+    
+    imprimirR:
+        pop dx
+        add dl, '0'
+        mov ah, 2
+        int 21h
+        loop imprimirR
+        
 ends
 
 end start ; set entry point and stop the assembler.
