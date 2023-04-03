@@ -1,12 +1,17 @@
 ; en este ejercicio se busca un 'trio social'
 ; dados 3 numeros, la suma de los divisores del primero
 ; tienen que dar el segundo numero. 
+; Haciendo la asignacion en BX, este programa
+; asigna la suma los divisores de BX en una variable
+; suma1
 data segment
-    ; add your data here!
-    num1 db ?
-    num2 db ?
-    num3 db ?
-    aux1 db ? 
+    suma1 dw 0
+    num1 dw ?
+    num2 dw ?
+    num3 dw ?
+    aux1 dw ? 
+    noson db "No es un triosociable$"
+    sison db "Es un triosociable$"
 ends
 
 stack segment
@@ -19,78 +24,86 @@ start:
     mov ax, data
     mov ds, ax
     mov es, ax
-; asignamos y guadando variables
-    mov bh, 20
-    mov num1,bh 
-    mov bl, 22 
-    mov num2,bl
-    mov ch, 14
-    mov num3, ch 
-
-; sacamos el divisor del primero  
-; inicializar la suma en 0
-    mov aux1, 0
     
-    ; dividir entre cada posible divisor y sumar si la division es exacta
-    mov cx, 0
-    mov cl, num1
-    
-        push ax
-        push dx
-        mov dl, cl
-        add dl, '0'
-        mov ah, 2
-        int 21h
-        pop dx
-        pop ax
-    
-    mov bx, 1
-    
-    div_loop:
-        inc bx      ; siguiente divisor
-        cmp bx, cx  ; se han probado todos los posibles divisores?
-        jg end_loop
-        mov ax, cx  ; dividendo = divisor
-        mov dx, 0
-        div bx      ; división entera
-        cmp dx, 0   ; la division es exacta?
-        jne div_loop
-        add aux1, bl ; sumar el divisor a la suma
-        
-        
-        push ax
-        push dx
-        mov dl, bl
-        add dl, '0'
-        mov ah, 2
-        int 21h
-        pop dx
-        pop ax
-        
-        jmp div_loop
-    
-
-
-;    loop_while:
-;        cmp cx, 11 ; comparar cx con 11
-;        jge fin_while ; si cx >= 11, salir del loop
-;        
-;        add cx, 1 ; incrementar cx
-;        mov dl, cx
-;        add dl, '0'
-;        mov ah, 2
-;        int 21h
-;        jmp loop_while ; volver al inicio del loop
-
-    end_loop:
+    mov bh, 18
     mov ax, 0
-    mov al, aux1     
-    
-    
-    mov ax, 4c00h ; exit to operating system.
-    int 21h    
-ends
+    mov al, bh
+    mov num1,ax 
+    mov bl, 25
+    mov al, bl 
+    mov num2,ax
+    mov ch, 33
+    mov al, ch
+    mov num3, ax 
 
-end start ; set entry point and stop the assembler.
-                                                     
+    ; Mostrar divisores de BX
+    mov bx, num1 
+    mov ax, bx   
+    mov cx, 0
+
+    divisores:
+        inc cx
+        cmp cx, bx       ; compara cx=bx, si es true salta a fin
+        jge one          ; son iguales
+
+        mov dx, 0        ; para hacer la operacion
+        mov ax, bx 
+        div cx
+        cmp dx, 0        ; verifica si es exacta
+        jne divisores
+        add suma1, cx    ; como es exacta CX se suma al resultado
+        jmp divisores
+    
+    one:
+    mov ax, num2
+    cmp suma1, ax
+    jge continue
+    jmp noSonF
+    continue:
+    
+    mov suma1, 0
+    mov bx, num2 
+    mov ax, bx   
+    mov cx, 0
+
+    divisores2:
+        inc cx
+        cmp cx, bx       ; compara cx=bx, si es true salta a fin
+        jge two          ; son iguales
+
+        mov dx, 0        ; para hacer la operacion
+        mov ax, bx 
+        div cx
+        cmp dx, 0        ; verifica si es exacta
+        jne divisores2
+        add suma1, cx    ; como es exacta CX se suma al resultado
+        jmp divisores2
+    
+    two:
+    mov ax, num3
+    cmp suma1, ax
+    jge siSonF
+    jmp noSonF
+    
+    noSonF:
+         lea dx, noson
+         mov ah, 9
+         int 21h
+         jmp fin
+         
+    siSonF:
+         lea dx, sison
+         mov ah, 9
+         int 21h
+         jmp fin
+         
+    
+    
+    fin:
+        ; Salida del programa
+        mov dx, suma1
+        mov ah, 4ch
+        int 21h
+
+end start
                                                      
