@@ -1,0 +1,124 @@
+; multi-segment executable file template.
+
+data segment
+    numero dw 0
+    len dw 0      
+    v db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+    mayor dw 0
+    mayor_num dw 0
+ends
+
+stack1 segment stack
+    dw 100h dup(0)
+ends
+
+code segment
+start:
+; set segment registers:
+    mov ax, data
+    mov ds, ax
+    mov es, ax
+    
+    ; 1) leer numero y longitud 
+    call pideNumero
+    continue:
+    mov bx, numero  ;asigna a BX el numero leído
+    mov len, cx
+  
+    
+    ; 2) Mostramos los valores de la pila:
+    ; cx ya tiene el len del numero
+    loop_while:
+        cmp len, 0 ; comparar cx con 0
+        je fin_while ; si cx == 0, salir del loop
+                                                                            
+        
+        ; Cargar el valor de ax
+        pop ax
+        lea si, v
+        
+        ; Comparamos con todos los varlores del vector
+        mov cx, 1
+
+        loop_while0:
+            cmp cx, 10 ; comparar cx con 11
+            jge fin_while0 ; si cx >= 11, salir del loop
+            mov bl, [si] ;3
+            cmp ax, cx
+            jne noson
+            inc [si]
+            mov bx, [si] 
+            jmp fin
+            noson:
+                
+            inc si
+            add cx, 1 ; incrementar cx
+            jmp loop_while0 ; volver al inicio del loop
+        fin_while0:        
+ 
+        fin:
+        ; Decrementar cx
+        dec len
+        
+        ; Volver al inicio del loop
+        jmp loop_while
+    
+    fin_while:
+    
+    ; si var0 es mayor que mayor, actualizar mayor
+    mov mayor, 0
+    mov cx, 1
+    
+    comparar:
+            cmp cx, 10 ; comparar cx con 11
+            jge mostrarMayor ; si cx >= 11, salir del loop
+            
+            mov ax, [si]
+            cmp ax, mayor
+            add cx, 1 ; incrementar cx
+            jle comparar    ; si no es mayor vuelve
+            
+            mov mayor, ax   ; si si es entonces asigna
+            mov mayor_num, cx
+ 
+            jmp comparar ; volver al inicio del 
+        
+    
+    mostrarMayor:
+        ; imprimir el valor de mayor
+        mov dx, mayor_num
+        add dx, 48 
+        mov ah, 2
+        int 21h 
+    
+    mov ax, 4c00h ; exit to operating system.
+    int 21h    
+    
+    pideNumero:
+        mov numero, 0
+        mov bx, 10
+        
+    leerNumero:
+        mov ah, 1
+        int 21h         ;interrupcion 
+        cmp al,13       ;13 es enter 
+        jz finLectura   
+        sub al,48       ;le restamos 48 para imrprimir
+        mov cx, 0
+        mov cl, al      ;guardamos el numero leido en cl
+        
+        ; guardamos el numero en la pila
+        mov ah, 0
+        push ax
+
+        mov ax, numero  ;ax=numero para multiplicarlo
+        mul bx          ;multiplicamos por 10 (bx=10)
+        add al, cl      ;al ressultado le añadimos el valor de cl
+        mov numero, ax  ;resultado final a numero 
+        jnz leerNumero  ;como al!=13 leemos otro digito
+     finLectura:
+        jmp continue
+    
+ends
+
+end start ; set entry point and stop the assembler.
