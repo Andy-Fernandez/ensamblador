@@ -7,18 +7,10 @@ data segment
     contador dw 0
     inicio dw 0
     final dw 0
-    ; Podemos definir varios vectores pero solo
-    ; podemos acceder a dos ya que tenemos que 
-    ; 'abrir' y 'cerrar' los vectores
-    
-    ; Otro aspecto es tener control sobre el ta
-    ; mano del vectora ya que no da error al pa
-    ; sarnos del tamano.
 ends
 
 code segment
 start:
-    ; Cargar la dirección del primer elemento del vector en bx
     mov ax, data
     mov ds, ax
     
