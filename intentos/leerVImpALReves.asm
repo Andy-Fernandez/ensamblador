@@ -5,13 +5,6 @@ data segment
     enter db 10,13,'$'
     len dw 0
     contador dw 0
-    ; Podemos definir varios vectores pero solo
-    ; podemos acceder a dos ya que tenemos que 
-    ; 'abrir' y 'cerrar' los vectores
-    
-    ; Otro aspecto es tener control sobre el ta
-    ; mano del vectora ya que no da error al pa
-    ; sarnos del tamano.
 ends
 
 code segment
