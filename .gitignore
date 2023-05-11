@@ -1,0 +1,19 @@
+# Ignorar archivos de respaldo creados por editores de texto
+*~
+
+# Ignorar archivos de compilación y ejecutables generados por el lenguaje de programación Java
+*.class
+*.jar
+
+# Ignorar archivos de registro y archivos temporales
+*.log
+*.tmp
+
+# Ignorar directorios específicos
+/target/
+/build/
+
+# Ignorar archivos de configuración locales
+/.idea/
+/.vscode/
+
