@@ -14,93 +14,64 @@ start:
     mov ax, data
     mov ds, ax
     
-    call pideNumero     ; Pedimos la longitud del vector
+    call pideNumero      ; Pedimos la longitud del vector
     call return  
     mov ax,numero
-    mov len, ax         ; Guardamos la longitud en "len"
+    mov len, ax          ; Guardamos la longitud en "len"
     
-    lea si, v           ; Asignamos la vase el vector "v"
+    lea si, v            ; Asignamos la vase el vector "v"
     
-    mov cx, 0
+    mov cx, len
     loop_while0:
-        cmp cx, len ; comparar cx con 11
-        jge fin_while0 ; si cx >= 11, salir del loop
-        
-        add cx, 1 ; incrementar cx
-        mov contador, cx
-        
+        cmp cx, 0        ; CX == 0?
+        jz fin_while0    ; True   
+                         ; False (continue)
+        mov contador, cx ; Guardamos CX
         call pideNumero
-        call return  
-        mov bx,numero
-        mov [si], bl
+        call return
+        
+        xor ax, ax  
+        mov ax,numero
+        mov [si], al
         inc si
         
         mov cx, contador
-        jmp loop_while0 ; volver al inicio del loop
+        loop loop_while0 ; volver al inicio del loop
         
     fin_while0:
-    ;### FIN ###ç
-    
-    
-    ;camturamos el valor del ultimo
+
     mov ax, numero
-    mov ultimo, ax
+    mov ultimo, ax       ; Guardamos ultimo <- numero
     
-    ;loop mostrar  
-    ;lea dx, enter
-    ;mov ah, 9
-    ;int 21h   
-    
-    ;mov ax, ultimo
-    ;call imprime
-    ;call return
-    
-    ;lea dx, enter
-    ;mov ah, 9
-    ;int 21h
-    
-      
-    
-    ;###IMPRIMIR EL VECTOR###
-    ; Hacemos un for que imrima la canditadad dada
-    lea si, v 
-    
-    mov cx, 0
+    ; El siguente codigo solo cuenta cuantas veces se repite
+    ;   el ultimo. 
+    lea si, v
+    mov cx, len          
     loop_while:
-        cmp cx, len ; comparar cx con 11
-        jge fin_while ; si cx >= 11, salir del loop
-        
-        add cx, 1 ; incrementar cx
+        cmp cx, 0 
+        jz fin_while 
         mov contador, cx
         
-        mov bl, [si] ;3
+        xor bx, bx
+        mov bl, [si] 
         inc si
         mov ax, ultimo 
-        cmp bx, ax ; comparar ax con 10
+        cmp bx, ax 
         je iguales
         jmp continuar
          
         iguales:
         add contador2, 1 
-        lea dx, enter
-        mov ah, 9
-        int 21h
-        
+
         continuar:
         mov cx, contador
-        jmp loop_while ; volver al inicio del loop
-        
-    fin_while:
-    ;### FIN ###
+        loop loop_while     
+    fin_while:   
     
-    
-    lea dx, enter
-    mov ah, 9
-    int 21h
+    call return
     
     mov ax, contador2
-    call imprime
-    call return  
+    call imprime  
 
     ; Salida del programa
     mov ax, 4c00h
