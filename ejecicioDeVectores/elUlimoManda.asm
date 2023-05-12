@@ -1,7 +1,6 @@
 data segment 
     numero dw  0
-    v db 3, 5, 8, 13, 0
-    t db 9
+    v db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
     enter db 10,13,'$'
     len dw 0
     contador dw 0
@@ -9,21 +8,18 @@ data segment
     contador2 dw 0
 ends
 
+; Nue
 code segment
 start:
-    ; Cargar la dirección del primer elemento del vector en bx
     mov ax, data
     mov ds, ax
     
-    ; Pedimos el tamaño del vector
-    call pideNumero
+    call pideNumero     ; Pedimos la longitud del vector
     call return  
     mov ax,numero
-    mov len, ax
+    mov len, ax         ; Guardamos la longitud en "len"
     
-    ;###LEER EL VECTOR###
-    ; Hacemos un for que imrima la canditadad dada
-    lea si, v 
+    lea si, v           ; Asignamos la vase el vector "v"
     
     mov cx, 0
     loop_while0:
@@ -110,48 +106,48 @@ start:
     mov ax, 4c00h
     int 21h
     
-     pideNumero:
+    pideNumero:
         mov numero,0
         mov bx,10
-     leerNumero:
-        mov ah,1
-        int 21h
-        cmp al,13
-        jz finLectura
-        sub al,48
-        mov cx,0
-        mov cl,al
-        mov ax,numero
-        mul bx
-        add al,cl
-        mov numero, ax
-        jnz leerNumero
-     finLectura:
+        leerNumero:
+            mov ah,1
+            int 21h
+            cmp al,13
+            jz finLectura
+            sub al,48
+            mov cx,0
+            mov cl,al
+            mov ax,numero
+            mul bx
+            add al,cl
+            mov numero, ax
+            jnz leerNumero
+        finLectura:
         ret    
-    
-     imprime:
+
+    imprime:
         mov bx,10
         mov cx,0
-     reducir:
-        mov dx,0
-        div bx
-        push dx
-        inc cx
-        cmp ax,0
-        jz mostrar
-        jmp reducir 
-     mostrar:
-        pop dx
-        add dl, 48
-        mov ah,2
-        int 21h
-        ;loop mostrar  
-        ;lea dx, enter
-        ;mov ah, 9
-        ;int 21h      
-        ret       
-    
-     return:
+        reducir:
+            mov dx,0
+            div bx
+            push dx
+            inc cx
+            cmp ax,0
+            jz mostrar
+            jmp reducir 
+        mostrar:
+            pop dx
+            add dl, 48
+            mov ah,2
+            int 21h
+            ;loop mostrar  
+            ;lea dx, enter
+            ;mov ah, 9
+            ;int 21h      
+            ret       
+
+    return:
         lea dx, enter
         mov ah, 9
         int 21h    
