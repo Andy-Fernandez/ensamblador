@@ -31,13 +31,11 @@ start:
         mov si, offset vector
         mov cx, len
     loop_while0:
-        push cx
         call pideNumero
         ;call return ;leer vector con 'enter'
         mov bx,numero
         mov [si], bl
         inc si
-        pop cx
         loop loop_while0
         ret 
     
@@ -48,9 +46,7 @@ start:
     loop_while:
         xor ax, ax    
         mov al, [si]
-        push cx
         call imprime
-        pop cx
         inc si 
         loop loop_while
     fin:
@@ -58,6 +54,7 @@ start:
     
     ;)Pide numero
     pideNumero:
+        push cx
         mov numero,0
         mov bx,10
         leerNumero:
@@ -76,10 +73,12 @@ start:
             mov numero, ax
             jnz leerNumero
         finLectura:
+            pop cx
             ret
             
     ;) Imprimimos un numero
-    imprime:
+    imprime:   
+        push cx
         mov bx,10
         mov cx,0
         reducir:
@@ -95,11 +94,13 @@ start:
             add dl, 48
             mov ah,2
             int 21h
-            loop mostrar  
+            loop mostrar
+              
             lea dx, espacio ;mostrar con espacio
             ;lea dx, enter   ;mostrar con enter
             mov ah, 9
             int 21h      
+            pop cx
             ret   
     
     return:
