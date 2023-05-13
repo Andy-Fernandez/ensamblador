@@ -1,7 +1,8 @@
 data segment 
     numero dw  0
-    v db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+    vector db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
     enter db 10,13,'$'
+    espacio db 32,'$' 
     len dw 0
     contador dw 0
     contador2 dw 0
@@ -14,35 +15,16 @@ code segment
 start:
     mov ax, data
     mov ds, ax
-       
+
     call pideNumero      ; Pedimos la longitud del vector
     call return  
     mov ax,numero
     mov len, ax          ; Guardamos la longitud en "len"
     
-        
-    mov si, offset v     ; lea si, v     ; Asignamos la vase el vector "v"
-    mov cx, len
-    loop_while0:
-        cmp cx, 0        ; CX == 0?
-        jz fin_while0    ; True   
-                         ; False (continue)
-        push cx
-        call pideNumero
-        call return
-        
-        xor ax, ax  
-        mov ax,numero
-        mov [si], al
-        inc si
-        
-        pop cx
-        loop loop_while0 ; volver al inicio del loop
-        
-    fin_while0:
+    call leerVector 
+    call return
 
-
-    mov di, offset v     ;lea di, v 
+    mov di, offset vector     ;lea di, v 
     mov cx, len
     mov maxCont, 0
      
@@ -56,7 +38,7 @@ start:
         mov comparador, ax
         push cx
          
-        mov si, offset v  ;lea si, v
+        mov si, offset vector  ;lea si, v
         mov contador2, 0
         mov cx, len         
         loop_while:
@@ -87,18 +69,52 @@ start:
     call return
     
     mov ax, maxCont
-    call imprime  
+    call imprime
+    
     mov ax, 4c00h         ; Fin del progrma
     int 21h
-
     
+    fin_programa:
+    
+    ;FUNCIONES 
+    ;)Leer un vector:
+    leerVector:
+        mov si, offset vector
+        mov cx, len
+    loop_while0:
+        call pideNumero
+        ;call return ;leer vector con 'enter'
+        mov bx,numero
+        mov [si], bl
+        inc si
+        loop loop_while0
+        ret 
+    
+    ;)Imprime vector con espacios:
+    imprimirVector:
+        mov si, offset vector
+        mov cx, len
+    loop_whileI:
+        xor ax, ax    
+        mov al, [si]
+        push cx
+        call imprime
+        pop cx
+        inc si 
+        loop loop_whileI
+        ret     
+    
+    ;)Pide numero
     pideNumero:
+        push cx
         mov numero,0
         mov bx,10
         leerNumero:
             mov ah,1
             int 21h
-            cmp al,13
+            cmp al, 13   ; Terminar en al 13 (Enter)
+            jz finLectura
+            cmp al, 32   ; Terminar en al 32 (espacio)
             jz finLectura
             sub al,48
             mov cx,0
@@ -109,8 +125,12 @@ start:
             mov numero, ax
             jnz leerNumero
         finLectura:
-        ret    
+            pop cx
+            ret
+            
+    ;) Imprimimos un numero
     imprime:
+        push cx
         mov bx,10
         mov cx,0
         reducir:
@@ -125,11 +145,19 @@ start:
             pop dx
             add dl, 48
             mov ah,2
-            int 21h       
-            ret       
+            int 21h
+            loop mostrar       
+        lea dx, espacio  ;mostrar con espacio
+        ;lea dx, enter   ;mostrar con enter
+        mov ah, 9
+        int 21h
+        pop cx      
+        ret   
+    
     return:
         lea dx, enter
         mov ah, 9
         int 21h    
-        ret    
+        ret
+    
 end start
