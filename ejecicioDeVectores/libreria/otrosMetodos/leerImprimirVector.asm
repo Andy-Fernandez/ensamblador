@@ -43,14 +43,13 @@ start:
     imprimirVector:
         mov si, offset vector
         mov cx, len
-    loop_while:
-        xor ax, ax    
-        mov al, [si]
-        call imprime
-        inc si 
-        loop loop_while
-    fin:
-        ret     
+    	loop_while:
+        	xor ax, ax    
+        	mov al, [si]
+        	call imprime
+        	inc si 
+        	loop loop_while
+ 	ret     
     
     ;)Pide numero
     pideNumero:
