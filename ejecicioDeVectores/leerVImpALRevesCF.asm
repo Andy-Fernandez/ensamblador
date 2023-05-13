@@ -20,7 +20,7 @@ start:
                     
     call leerVector 
     call return
-    call imprimirVector
+    call imprimirVectorAlReves
          
     mov ax, 4c00h
     int 21h
@@ -50,6 +50,18 @@ start:
         	inc si 
         	loop loop_while
  	    ret     
+    
+    imprimirVectorAlReves:
+        mov si, offset vector
+        mov cx, len
+        add si, cx
+        loop_whileAR:
+            xor ax, ax
+            dec si     
+            mov al, [si]
+            call imprime
+            loop loop_whileAR
+        ret
     
     ;)Pide numero
     pideNumero:
