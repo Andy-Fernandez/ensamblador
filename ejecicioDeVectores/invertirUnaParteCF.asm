@@ -16,19 +16,32 @@ start:
     mov ax, data
     mov ds, ax
     
-    ;call pideNumero         ; pedimos un numero
-    ;call return  
-    ;mov ax,numero
-    ;mov len, ax             ; lo guarmamos en "len"
+    call pideNumero         ; pedimos un numero
+    mov ax,numero
+    mov len, ax             ; lo guarmamos en "len"
+    
+    call pideNumero         ; pedimos un numero
+    mov ax,numero
+    mov ini, ax
+    
+    call pideNumero         ; pedimos un numero
+    mov ax,numero
+    mov fin, ax
+    call return
+    
                     
-    ;call leerVector 
-    ;call return
+    call leerVector 
+    call return
+    
+    
     mov ax, fin
     mov aux, ax
     mov ax, ini
     mov fin, ax
+    dec fin
     mov ini, 1
     call imprimirVectorIF
+    inc fin
     
     mov ax, fin
     mov ini, ax
@@ -38,6 +51,7 @@ start:
     
     mov ax, fin
     mov ini, ax
+    inc ini
     mov ax, len
     mov fin, ax
     call imprimirVectorIF
@@ -77,7 +91,7 @@ start:
         mov ax, fin             ; ax = fin
         sub ax, ini             ; ax = fin - ini
         mov cx, ax              ; cx = len = ax
-        ;inc cx                  ; cx++
+        inc cx                  ; cx++
         add si, ini             ; si += ini
         dec si                  ; si--
     	loop_whileIF:
