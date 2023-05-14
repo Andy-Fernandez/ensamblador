@@ -1,12 +1,14 @@
 data segment 
-    numero dw  0
-    v db 3, 5, 8, 13, 0
-    t db 9
+    numero dw  0 
+    vector db 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     enter db 10,13,'$'
-    len dw 0
+    espacio db 32,'$'
+    len dw 10
     contador dw 0
-    inicio dw 0
-    final dw 0
+    
+    aux dw 0 
+    ini dw 5
+    fin dw 9    
 ends
 
 code segment
@@ -14,149 +16,167 @@ start:
     mov ax, data
     mov ds, ax
     
-    ; Pedimos el tamaño del vector
-    call pideNumero
-    call return  
-    mov ax,numero
-    mov len, ax 
+    ;call pideNumero         ; pedimos un numero
+    ;call return  
+    ;mov ax,numero
+    ;mov len, ax             ; lo guarmamos en "len"
+                    
+    ;call leerVector 
+    ;call return
+    mov ax, fin
+    mov aux, ax
+    mov ax, ini
+    mov fin, ax
+    mov ini, 1
+    call imprimirVectorIF
     
-    call pideNumero
-    call return  
-    mov ax,numero
-    mov inicio, ax
+    mov ax, fin
+    mov ini, ax
+    mov ax, aux
+    mov fin, ax
+    call imprimirVectorIFAlReves
     
-    call pideNumero
-    call return  
-    mov ax,numero
-    mov final, ax
-    
-    ;###LEER EL VECTOR###
-    ; Hacemos un for que imrima la canditadad dada
-    lea si, v 
-    
-    mov cx, 0
-    loop_while0:
-        cmp cx, len ; comparar cx con 11
-        jge fin_while0 ; si cx >= 11, salir del loop
-        
-        add cx, 1 ; incrementar cx
-        mov contador, cx
-        
-        call pideNumero
-        call return  
-        mov bx,numero
-        mov [si], bl
-        inc si
-        
-        mov cx, contador
-        jmp loop_while0 ; volver al inicio del loop
-        
-    fin_while0:
-    ;### FIN ### 
-    
-    ;###IMPRIMIR EL VECTOR###
-    ; Hacemos un for que imrima la canditadad dada
-    lea si, v 
-    
-    mov cx, 0 
-    ;add si, len
-    ;dec si 
-    loop_while:
-        cmp cx, len ; comparar cx con 11
-        jge fin_while ; si cx >= 11, salir del loop
-        
-        add cx, 1 ; incrementar cx
-        mov contador, cx
-        
-        cmp inicio, cx;comparamos si el contador es igual al segudo parametro 
-        je cambioApuntador; cambiamos apuntador
-        seguir:
-        
-        
-        sinCambio:       
-        mov bl, [si] ;3
-        mov ax, bx
-        call imprime
-        call return
-        dec si
-        
-        mov cx, contador
-        jmp loop_while ; volver al inicio del loop
-        
-    fin_while:
-    ;### FIN ###
-
-    ; Salida del programa
+    mov ax, fin
+    mov ini, ax
+    mov ax, len
+    mov fin, ax
+    call imprimirVectorIF
+         
     mov ax, 4c00h
     int 21h
     
-     pideNumero:
-        mov numero,0
-        mov bx,10
-     leerNumero:
-        mov ah,1
-        int 21h
-        cmp al,13
-        jz finLectura
-        sub al,48
-        mov cx,0
-        mov cl,al
-        mov ax,numero
-        mul bx
-        add al,cl
-        mov numero, ax
-        jnz leerNumero
-     finLectura:
+    ;FUNCIONES 
+    ;)Leer un vector:
+    leerVector:
+        mov si, offset vector
+        mov cx, len
+    loop_while0:
+        call pideNumero
+        ;call return ;leer vector con 'enter'
+        mov bx,numero
+        mov [si], bl
+        inc si
+        loop loop_while0
+        ret 
+    
+    ;)Imprime vector con espacios:
+    imprimirVector:
+        mov si, offset vector
+        mov cx, len
+    	loop_while:
+        	xor ax, ax    
+        	mov al, [si]
+        	call imprime
+        	inc si 
+        	loop loop_while
+ 	    ret
+    
+    ;)Imprime vector con espacios, dado inicio y fin
+    imprimirVectorIF:
+        mov si, offset vector
+        mov ax, fin             ; ax = fin
+        sub ax, ini             ; ax = fin - ini
+        mov cx, ax              ; cx = len = ax
+        ;inc cx                  ; cx++
+        add si, ini             ; si += ini
+        dec si                  ; si--
+    	loop_whileIF:
+        	xor ax, ax    
+        	mov al, [si]
+        	call imprime
+        	inc si 
+        	loop loop_whileIF
+ 	    ret
+ 	
+ 	;)Imprime vector con espacios, dado inicio y fin
+    imprimirVectorIFAlReves:
+        mov si, offset vector
+        mov ax, fin             ; ax = fin      
+        sub ax, ini             ; ax = fin - ini
+        mov cx, ax              ; cx = len = ax 
+        inc cx                  ; cx++          
+        add si, fin             ; si += fin
+        loop_whileIFAR:
+            xor ax, ax
+            dec si     
+            mov al, [si]
+            call imprime
+            loop loop_whileIFAR
         ret    
     
-     imprime:
+    imprimirVectorAlReves:
+        mov si, offset vector
+        mov cx, len
+        add si, cx
+        loop_whileAR:
+            xor ax, ax
+            dec si     
+            mov al, [si]
+            call imprime
+            loop loop_whileAR
+        ret
+    
+    ;)Pide numero
+    pideNumero:
+        push cx
+        mov numero,0
+        mov bx,10
+        leerNumero:
+            mov ah,1
+            int 21h
+            cmp al, 13   ; Terminar en al 13 (Enter)
+            jz finLectura
+            cmp al, 32   ; Terminar en al 32 (espacio)
+            jz finLectura
+            sub al,48
+            mov cx,0
+            mov cl,al
+            mov ax,numero
+            mul bx
+            add al,cl
+            mov numero, ax
+            jnz leerNumero
+        finLectura:
+            pop cx
+            ret
+            
+    ;) Imprimimos un numero
+    imprime:   
+        push cx
         mov bx,10
         mov cx,0
-     reducir:
-        mov dx,0
-        div bx
-        push dx
-        inc cx
-        cmp ax,0
-        jz mostrar
-        jmp reducir 
-     mostrar:
-        pop dx
-        add dl, 48
-        mov ah,2
-        int 21h
-        ;loop mostrar  
-        ;lea dx, enter
-        ;mov ah, 9
-        ;int 21h      
-        ret       
+        reducir:
+            mov dx,0
+            div bx
+            push dx
+            inc cx
+            cmp ax,0
+            jz mostrar
+            jmp reducir 
+        mostrar:
+            pop dx
+            add dl, 48
+            mov ah,2
+            int 21h
+            loop mostrar
+              
+            lea dx, espacio ;mostrar con espacio
+            ;lea dx, enter   ;mostrar con enter
+            mov ah, 9
+            int 21h      
+            pop cx
+            ret   
     
-     return:
+    return:
         lea dx, enter
         mov ah, 9
         int 21h    
         ret
-        
-     cambioApuntador:
-        ;mov ax, final
-        ;sub ax, inicio   
-        inc si
-        inc si
-        inc si
-        
-        loop_while2:
-            cmp cx, len ; comparar cx con 11
-            jge seguir ; si cx >= 11, salir del loop
-            
-            add cx, 1 ; incrementar cx
-            mov contador, cx
-            
-            mov bl, [si] ;3
-            mov ax, bx
-            call imprime
-            call return
-            dec si
-            
-            mov cx, contador
-            jmp loop_while2 ; volver al inicio del loop    
+    
+    returnEs:
+        lea dx, espacio
+        mov ah, 9
+        int 21h    
+        ret
+
 end start

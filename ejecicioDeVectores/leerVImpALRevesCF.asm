@@ -1,6 +1,6 @@
 data segment 
     numero dw  0 
-    vector db 13, 15, 18, 13, 10
+    vector db 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
     enter db 10,13,'$'
     espacio db 32,'$'
     len dw 0
