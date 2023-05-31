@@ -1,0 +1,127 @@
+data segment 
+    numero dw  0 
+    vector db 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5 
+    enter db 10,13,'$'
+    espacio db 32,'$'
+    len dw 0
+    contador dw 0
+    aux dw 0
+    caracter dw 0 
+    rojo dw 0
+    verde dw 0
+    cadena db "iguales$"
+    dereck db "Dereck$"
+    marquito db "Marquito$"
+ends
+
+code segment
+start:
+    mov ax, data
+    mov ds, ax
+    
+    call pideNumero
+    call return                
+    call pideNumero
+    call return
+    mov ax, rojo 
+    cmp ax, verde
+    jg mayor; mayor
+    jl menor; igual
+    jz iguales
+             
+    iguales:         
+        lea dx, cadena
+        mov ah, 9
+        int 21h
+        jmp fprog
+    
+    mayor:
+        lea dx, dereck
+        mov ah, 9
+        int 21h
+        jmp fprog
+    
+    menor:
+        lea dx, marquito
+        mov ah, 9
+        int 21h
+        jmp fprog
+    
+    
+    fprog:     
+    mov ax, 4c00h
+    int 21h
+       
+    
+    ;)Pide numero
+    pideNumero:
+        push cx
+        mov contador,0
+        mov bx,10
+        leerNumero:
+            mov ah,1
+            int 21h
+            cmp al, 13   ; Terminar en al 13 (Enter)
+            jz finLectura
+            cmp al, 68   ; Terminar en al 68 (M)
+            jz M
+            cmp al, 77   ; Terminar en al 77 (D)
+            jz D
+            jnz leerNumero
+        finLectura:
+            pop cx
+            ret
+    
+    sumaContador:
+        ; Aumentar el contador
+        inc contador
+        ; Guardar el último carácter ingresado
+        mov caracter, ax 
+        jmp leerNumero
+        
+    M:
+        inc rojo
+        jmp leerNumero
+    D:
+        inc verde
+        jmp leerNumero 
+                              
+; M 68 
+; D 77
+    
+    return:
+        lea dx, enter
+        mov ah, 9
+        int 21h    
+        ret
+    
+    returnEs:
+        lea dx, espacio
+        mov ah, 9
+        int 21h    
+        ret
+        
+    imprime:
+        mov bx,10
+        mov cx,0
+    reducir:
+        mov dx,0
+        div bx
+        push dx
+        inc cx
+        cmp ax,0
+        jz mostrar
+        jmp reducir 
+    mostrar:
+        pop dx
+        add dl, 48
+        mov ah,2
+        int 21h
+        loop mostrar  
+        lea dx, espacio ;mostrar con espacio
+        ;lea dx, enter   ;mostrar con enter
+        mov ah, 9
+        int 21h      
+        ret  
+
+end start
