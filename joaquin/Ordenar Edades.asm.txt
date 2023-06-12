@@ -1,0 +1,205 @@
+data segment  
+    x dw 30 dup(0)
+    numero dw  0       
+    enter db 10,13,'$'
+    len dw 0
+    contador dw 0  
+    contador2 dw 0 
+    aux1 dw 0
+    aux2 dw 0 
+    aux dw 0
+ends
+
+code segment
+start:
+    ; Cargar la dirección del primer elemento del vector en bx
+    mov ax, data
+    mov ds, ax
+    
+    ; Pedimos el tamaño del vector
+    call pideNumeroEsp
+    mov ax,numero
+    mov len, ax
+    
+    lea si,x 
+    
+    mov cx,0
+    ciclo: 
+        cmp cx,len
+        jz ordenar 
+        inc cx 
+        mov contador,cx     
+        call pideNumeroEsp 
+        mov ax,numero
+        mov [si],ax 
+        inc si  
+        inc si
+        mov cx,contador
+        jmp ciclo
+ 
+    ordenar:
+        call return 
+        mov cx,len
+        iterar0: 
+            cmp cx,1
+            jz pantalla 
+            lea si,x
+            mov dx,1
+            mov ax,[si]
+            inc si
+            inc si  
+            ;add si,2
+            iterar:
+                cmp dx,len
+                jz volver
+                mov bx,[si]
+                menor:
+                    cmp ax,bx
+                    jnl cambiar
+                    jmp actualizar
+                    cambiar:   
+                        dec si
+                        dec si
+                        mov [si],bx
+                        inc si
+                        inc si
+                        mov [si],ax
+                        
+                        mov bx,ax 
+                        inc si
+                        inc si
+                        inc dx
+                        jmp iterar
+                        
+                    actualizar:  
+                        mov ax,bx
+                        inc si
+                        inc si
+                        inc dx
+                        jmp iterar
+                volver:  
+                    dec cx
+                    jmp iterar0
+            
+    pantalla:
+        call mostVec
+            
+    fin: 
+    mov ah, 1
+    int 21h
+    
+    mov ax, 4c00h
+    int 21h
+    
+    pideNumeroEsp:
+        mov numero,0
+        mov bx,10
+    leerNumeroEsp:
+        mov ah,1
+        int 21h
+        cmp al,32
+        jnz p1  
+        jz finLecturaEsp
+        p1:    
+            sub al,48
+            mov cx,0
+            mov cl,al
+            mov ax,numero
+            mul bx
+            add al,cl
+            mov numero, ax
+            jnz leerNumeroEsp
+    finLecturaEsp:
+        ret    
+     
+    pideNumero:
+        mov numero,0
+        mov bx,10
+    leerNumero:
+        mov ah,1
+        int 21h
+        cmp al,13     
+        jz finLectura
+        sub al,48
+        mov cx,0
+        mov cl,al
+        mov ax,numero
+        mul bx
+        add al,cl
+        mov numero, ax
+        jnz leerNumero
+     finLectura:
+        ret    
+     
+     
+     imprime:
+        mov bx,10
+        mov cx,0
+        reducir:
+            mov dx,0
+            div bx
+            push dx
+            inc cx
+            cmp ax,0
+            jz mostrar
+            jmp reducir 
+        mostrar: 
+            mov dx,0
+            pop dx
+            add dl, 48
+            mov ah,2
+            int 21h 
+            loop mostrar      
+        ret       
+    
+     return:
+        lea dx, enter
+        mov ah, 9
+        int 21h    
+        ret
+     
+     ; 5 2 4
+     ; 7 8 9 1 2 => 7 1 9 8 2
+     
+     mostVec:
+        lea si,x
+        mov cx,0
+        ciclo2:
+            cmp cx,len
+            jz fin2  
+            mov ax,[si]
+            imprime2:
+                mov bx,10
+                mov contador2,0
+            reducir2:
+                mov dx,0
+                div bx
+                push dx
+                inc contador2
+                cmp ax,0
+                jz mostrar2
+                jmp reducir2 
+                mostrar2:
+                    mov bx,contador2
+                    mostrar3: 
+                        cmp bx,0
+                        jz iterar2
+                        pop dx
+                        add dl, 48
+                        mov ah,2
+                        int 21h
+                        dec bx
+                        jmp mostrar3   
+            iterar2:
+            mov dx,' '
+            int 21h
+             
+            inc si
+            inc si
+            inc cx 
+            jmp ciclo2
+        fin2:
+            ret             
+                
+                
+end start
