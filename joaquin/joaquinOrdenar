@@ -1,0 +1,123 @@
+; multi-segment executable file template.
+
+data segment
+    ; add your data here!
+    cadena db 20 dup(0)  
+    numero dw 0
+    enter db 10,13,"$"   
+    ; 52 56 41       
+    r dw 0
+    v dw 0
+    a dw 0 
+    len dw 0
+ends
+
+stack segment
+    dw   128  dup(0)
+ends
+
+code segment
+start:
+; set segment registers:
+    mov ax, data
+    mov ds, ax
+    mov es, ax
+    
+    call pideCadena
+    call return
+    
+    Pares:  
+        lea si,cadena 
+        mov al,[si]
+        inc si
+        mov cx,1
+        ciclo: 
+            cmp cx,len
+            jz fin 
+            cmp al,[si]
+            jz incrementar
+            jmp continuar
+            incrementar:
+                cmp [si],82
+                jz Ere
+                cmp [si],86
+                jz EsV
+                cmp [si],65
+                jz EsA
+            
+                Ere:
+                inc r
+                jmp continuar
+                EsV:
+                inc v       
+                jmp continuar
+                EsA:
+                inc a     
+                jmp continuar
+                
+            continuar: 
+            mov al,[si]
+            inc si
+            inc cx
+             
+            jmp ciclo
+    
+    fin: 
+    
+    most:
+        mov ax,r
+        add ax,v
+        add ax,a
+        
+        mov dx,ax
+        add dx,48
+        mov ah,2
+        int 21h
+    
+       ; output string at ds:dx
+    
+    ; wait for any key....    
+    mov ah, 1
+    int 21h
+    
+    mov ax, 4c00h ; exit to operating system.
+    int 21h
+    
+    pideCadena:
+        lea si,cadena
+        mov bx,0
+    leerLetra:
+        mov ah,1
+        int 21h
+        cmp al,13     
+        jz finLectura  
+        inc bx
+        mov [si],al 
+        inc si
+        jnz leerLetra
+     finLectura: 
+        mov len,bx
+        ret     
+        
+     imprime:
+        lea si,cadena
+        mostrar:
+            mov dx,[si]
+            mov ah,2
+            int 21h
+            inc si
+            dec bx
+            cmp bx,0
+            jz salir
+            jmp mostrar 
+        salir:             
+            ret       
+    
+     return:
+        lea dx, enter
+        mov ah, 9
+        int 21h    
+        ret   
+ends
+
+end start ; set entry point and stop the assembler.
